@@ -17,6 +17,7 @@ import (
 	"github.com/alastairpat/oauth2_proxy/cookie"
 	"github.com/alastairpat/oauth2_proxy/providers"
 	"github.com/mbland/hmacauth"
+	"crypto/tls"
 )
 
 const SignatureHeader = "GAP-Signature"
@@ -118,6 +119,8 @@ func NewFileServer(path string, filesystemPath string) (proxy http.Handler) {
 }
 
 func NewOAuthProxy(opts *Options, validator func(string) bool) *OAuthProxy {
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+
 	serveMux := http.NewServeMux()
 	var auth hmacauth.HmacAuth
 	if sigData := opts.signatureData; sigData != nil {
