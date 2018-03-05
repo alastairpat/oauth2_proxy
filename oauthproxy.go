@@ -374,7 +374,7 @@ func (p *OAuthProxy) makeCookie(req *http.Request, name string, value string, ex
 
 func (p *OAuthProxy) ClearCSRFCookie(rw http.ResponseWriter, req *http.Request) {
 
-	http.SetCookie(rw, p.MakeCSRFCookie(req, "", time.Hour*-1, time.Now()))
+	http.SetCookie(rw, p.MakeCSRFCookie(req, "", time.Hour * -1, time.Now()))
 }
 
 func (p *OAuthProxy) SetCSRFCookie(rw http.ResponseWriter, req *http.Request, val string) {
@@ -382,7 +382,7 @@ func (p *OAuthProxy) SetCSRFCookie(rw http.ResponseWriter, req *http.Request, va
 }
 
 func (p *OAuthProxy) ClearSessionCookie(rw http.ResponseWriter, req *http.Request) {
-	cookies := p.MakeSessionCookie(req, "", time.Hour*-1, time.Now())
+	cookies := p.MakeSessionCookie(req, "", time.Hour * -1, time.Now())
 	for _, clr := range cookies {
 		http.SetCookie(rw, clr)
 	}
@@ -784,11 +784,19 @@ func (p *OAuthProxy) Authenticate(rw http.ResponseWriter, req *http.Request) int
 	if p.PassAccessToken && session.AccessToken != "" {
 		req.Header["X-Forwarded-Access-Token"] = []string{session.AccessToken}
 	}
-	if p.PassAuthorization && session.IdToken != "" {
-		req.Header["Authorization"] = []string{fmt.Sprintf("Bearer %s", session.IdToken)}
+	if p.PassAuthorization {
+		if session.IdToken != "" {
+			req.Header["Authorization"] = []string{fmt.Sprintf("Bearer %s", session.IdToken)}
+		} else {
+			req.Header["Authorization"] = []string{fmt.Sprintf("Bearer %s", session.AccessToken)}
+		}
 	}
-	if p.SetAuthorization && session.IdToken != "" {
-		rw.Header().Set("Authorization", fmt.Sprintf("Bearer %s", session.IdToken))
+	if p.SetAuthorization {
+		if session.IdToken != "" {
+			rw.Header().Set("Authorization", fmt.Sprintf("Bearer %s", session.IdToken))
+		} else {
+			rw.Header().Set("Authorization", fmt.Sprintf("Bearer %s", session.AccessToken))
+		}
 	}
 	if session.Email == "" {
 		rw.Header().Set("GAP-Auth", session.User)
