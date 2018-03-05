@@ -89,6 +89,7 @@ func (p *ProviderData) GetLoginURL(redirectURI, state string) string {
 	params.Set("client_id", p.ClientID)
 	params.Set("response_type", "code")
 	params.Add("api-version", "1.0")
+	params.Add("login_hint", "kubernetes@reecenet.org")
 	params.Add("state", state)
 	a.RawQuery = params.Encode()
 	return a.String()
