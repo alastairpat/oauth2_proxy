@@ -24,6 +24,7 @@ func (p *ProviderData) Redeem(redirectURL, code string) (s *SessionState, err er
 	params.Add("client_secret", p.ClientSecret)
 	params.Add("code", code)
 	params.Add("grant_type", "authorization_code")
+	params.Add("api-version", "1.0")
 	if p.ProtectedResource != nil && p.ProtectedResource.String() != "" {
 		params.Add("resource", p.ProtectedResource.String())
 	}
@@ -87,6 +88,7 @@ func (p *ProviderData) GetLoginURL(redirectURI, state string) string {
 	params.Add("scope", p.Scope)
 	params.Set("client_id", p.ClientID)
 	params.Set("response_type", "code")
+	params.Add("api-version", "1.0")
 	params.Add("state", state)
 	a.RawQuery = params.Encode()
 	return a.String()
