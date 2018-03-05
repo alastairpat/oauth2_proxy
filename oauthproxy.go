@@ -788,8 +788,10 @@ func (p *OAuthProxy) Authenticate(rw http.ResponseWriter, req *http.Request) int
 	}
 	if p.PassAuthorization {
 		if session.IdToken != "" {
+			log.Printf("IdToken != '', setting Authorization to %s", fmt.Sprintf("Bearer %s", session.IdToken))
 			req.Header["Authorization"] = []string{fmt.Sprintf("Bearer %s", session.IdToken)}
 		} else {
+			log.Printf("IdToken == '', setting Authorization to %s", fmt.Sprintf("Bearer %s", session.AccessToken))
 			req.Header["Authorization"] = []string{fmt.Sprintf("Bearer %s", session.AccessToken)}
 		}
 	}
